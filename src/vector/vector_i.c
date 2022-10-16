@@ -68,54 +68,15 @@ ALWAYS_INLINE PURE bool equals4i(struct v4i u, struct v4i v)
 }
 
 
-void str2i(char *dst, struct v2i v)
-{
-        char * res;
-        i32_t arr[2] = {v.x, v.y};
-        res = iarrtos(arr, 2);
-
-        dst = "v2i(";
-        strcpy(dst+4, res);
-        strcat(dst, ")");
-}
-void str3i(char *dst, struct v3i v)
-{
-        char * res;
-        i32_t arr[3] = {v.x, v.y, v.z};
-
-        res = iarrtos(arr, 3);
-
-        dst = "v3i(";
-        strcpy(dst+4, res);
-        strcat(dst, ")");
-}
-void str4i(char *dst, struct v4i v)
-{
-        char * res;
-        i32_t arr[] = {v.x, v.y, v.z, v.w};
-
-        res = iarrtos(arr, 4);
-
-        dst = "v4i(";
-        strcpy(dst+4, res);
-        strcat(dst, ")");
-}
-
 void print2i(struct v2i v)
 {
-        char str[100];
-        str2i(str, v);
-        printf("%s\n", str);
+        printf("v2i(%i, %i)\n", v.x, v.y);
 }
 void print3i(struct v3i v)
 {
-        char str[100];
-        str3i(str, v);
-        printf("%s\n", str);
+        printf("v3i(%i, %i, %i)\n", v.x, v.y, v.z);
 }
 void print4i(struct v4i v)
 {
-        char str[100];
-        str4i(str, v);
-        printf("%s\n", str);
+        printf("v4i(%i, %i, %i, %i)\n", v.x, v.y, v.z, v.w);
 }

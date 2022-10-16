@@ -13,7 +13,7 @@
 #include "vector.h"
 #include <UL/types.h>
 #include <UL/macro.h>
-
+#include <UL/math.h>
 
 /**
  * row major order matricies
@@ -49,8 +49,8 @@ struct PACKED m4 { f32_t m[16]; };
  **/
 #define RX_M3(_a) M3(                                                           \
                 1.0, 0.0,      0.0,                                             \
-                0.0, cos(_a), -sin(_a),                                         \
-                0.0, sin(_a),  cos(_a))
+                0.0, COSF(_a), -SINF(_a),                                         \
+                0.0, SINF(_a),  COSF(_a))
 #define RY_M3(_a) M3(                                                           \
                 cos(_a),  0.0,  sin(_a),                                        \
                 0.0,      1.0,  0.0,                                            \
@@ -97,11 +97,16 @@ struct PACKED m4 { f32_t m[16]; };
                 0.0, 0.0, 1.0, (z_),                                            \
                 0.0, 0.0, 0.0, 1.0)
 
+struct m4 m3m4(struct m3 m);
+struct m3 m4m3(struct m4 m);
+
 struct m3 transpose_m3(struct m3 m);
 struct m4 transpose_m4(struct m4 m);
 
 void transpose_m3_r(struct m3 *m);
 void transpose_m4_r(struct m4 *m);
+
+struct m4 perspective(f32_t fov, f32_t ar, f32_t n, f32_t f);
 
 struct m3 add_m3(struct m3 a, struct m3 b);
 struct m3 sub_m3(struct m3 a, struct m3 b);
@@ -158,7 +163,7 @@ struct m4 translate_m4(struct m4, struct v3f v);
 struct m3 rotate_m3(struct m3, f32_t a, struct v3f rv);
 struct m4 rotate_m4(struct m4, f32_t a, struct v3f rv);
 
-struct v3f dot_m3f(struct m4 m, struct v3f v);
+struct v3f dot_m3f(struct m3 m, struct v3f v);
 struct v4f dot_m4f(struct m4 m, struct v4f v);
 
 void printm3(struct m3 m);

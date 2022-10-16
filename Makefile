@@ -5,7 +5,7 @@ INCLUDE_DIR = src
 CFLAGS = -I$(INCLUDE_DIR) -F /Library/Frameworks
 AR_FLAGS = ruv
 LIBS = -framework UL
-C_TEST_SOURCES = $(wildcard src/*.c *.c src/test/test/*.c )
+C_TEST_SOURCES = $(wildcard src/*.c *.c src/*/*.c src/test/test/*.c )
 C_SOURCES = $(wildcard src/*/*.c src/*.c *.c )
 DEPS = $(wildcard $(INCLUDE_DIR)/*/*.h $(INCLUDE_DIR)/*.h *.h)
 

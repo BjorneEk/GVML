@@ -139,55 +139,15 @@ struct v4f normal4f(struct v4f u, struct v4f v, struct v4f w)
 }
 
 
-void str2f(char *dst, struct v2f v)
-{
-        f64_t drep[] = {v.x, v.y};
-        char * res;
-
-        res = farrtos(drep, 2);
-
-        dst = "v2f(";
-        strcpy(dst+4, res);
-        strcat(dst, ")");
-}
-void str3f(char *dst, struct v3f v)
-{
-        f64_t drep[] = {v.x, v.y, v.z};
-        char * res;
-
-        res = farrtos(drep, 3);
-
-        dst = "v3f(";
-        strcpy(dst+4, res);
-        strcat(dst, ")");
-}
-void str4f(char *dst, struct v4f v)
-{
-        f64_t drep[] = {v.x, v.y, v.z, v.w};
-        char * res;
-
-        res = farrtos(drep, 4);
-
-        dst = "v4f(";
-        strcpy(dst+4, res);
-        strcat(dst, ")");
-}
-
 void print2f(struct v2f v)
 {
-        char str[100];
-        str2f(str, v);
-        printf("%s\n", str);
+        printf("v2f(%f, %f)\n", v.x, v.y);
 }
 void print3f(struct v3f v)
 {
-        char str[100];
-        str3f(str, v);
-        printf("%s\n", str);
+        printf("v3f(%f, %f, %f)\n", v.x, v.y, v.z);
 }
 void print4f(struct v4f v)
 {
-        char str[100];
-        str4f(str, v);
-        printf("%s\n", str);
+        printf("v4f(%f, %f, %f, %f)\n", v.x, v.y, v.z, v.w);
 }

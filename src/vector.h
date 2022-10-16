@@ -97,10 +97,6 @@ struct v4f normalizedf4(struct v4f v);
 struct v3f normal3f(struct v3f u, struct v3f v, struct v3f w);
 struct v4f normal4f(struct v4f u, struct v4f v, struct v4f w);
 
-void str2f(char *dst, struct v2f v);
-void str3f(char *dst, struct v3f v);
-void str4f(char *dst, struct v4f v);
-
 void print2f(struct v2f v);
 void print3f(struct v3f v);
 void print4f(struct v4f v);
@@ -124,10 +120,6 @@ i32_t dot4i(struct v4i u, struct v4i v);
 bool equals2i(struct v2i u, struct v2i v);
 bool equals3i(struct v3i u, struct v3i v);
 bool equals4i(struct v4i u, struct v4i v);
-
-void str2i(char *dst, struct v2i v);
-void str3i(char *dst, struct v3i v);
-void str4i(char *dst, struct v4i v);
 
 void print2i(struct v2i v);
 void print3i(struct v3i v);
