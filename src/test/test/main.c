@@ -6,9 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../vector.h"
+
+extern void test_rot3();
+extern void test_dot_m3();
+extern void test_rot4();
+extern void test_dot_m4();
 int main(int argc, char const *argv[]) {
-        struct v2f v1 = V2F(1.0, 2.0);
-        struct v2f v2 = V2F(1.0, 2.0);
-        printf("dot: %f\n", dot2f(v2, v2));
+        test_rot3();
+        test_rot4();
+        test_dot_m3();
+        test_dot_m4();
         return 0;
 }
