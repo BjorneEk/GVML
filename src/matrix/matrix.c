@@ -7,7 +7,10 @@
  *==========================================================*/
 
 #include "../matrix.h"
-
+#include <UL/math.h>
+#include <string.h>
+#include <UL/str.h>
+#include <stdio.h>
 
 ALWAYS_INLINE PURE struct m3 transpose_m3(struct m3 m)
 {
@@ -34,41 +37,16 @@ ALWAYS_INLINE void transpose_m4_r(struct m4 *m)
         *m = transpose_m4(*m);
 }
 
-struct m3 add_m3(struct m3 a, struct m3 b);
-struct m3 sub_m3(struct m3 a, struct m3 b);
-struct m3 mul_m3(struct m3 a, struct m3 b);
-struct m3 div_m3(struct m3 a, struct m3 b);
-
-struct m4 add_m4(struct m4 a, struct m4 b);
-struct m4 sub_m4(struct m4 a, struct m4 b);
-struct m4 mul_m4(struct m4 a, struct m4 b);
-struct m4 div_m4(struct m4 a, struct m4 b);
-
-void add_m3_r(struct m3 *a, struct m3 b);
-void sub_m3_r(struct m3 *a, struct m3 b);
-void mul_m3_r(struct m3 *a, struct m3 b);
-void div_m3_r(struct m3 *a, struct m3 b);
-
-void add_m4_r(struct m4 *a, struct m4 b);
-void sub_m4_r(struct m4 *a, struct m4 b);
-void mul_m4_r(struct m4 *a, struct m4 b);
-void div_m4_r(struct m4 *a, struct m4 b);
-
-struct m3 mul_m3s(struct m3 a, f32_t s);
-struct m4 mul_m4s(struct m4 a, f32_t s);
-
-void mul_m3s_r(struct m3 *a, f32_t s);
-void mul_m4s_r(struct m4 *a, f32_t s);
 
 #define AB(i, j) a.m[i] * b.m[j]
-inline PURE struct m3 dot_m3(struct m3 a, struct m3 b)
+PURE struct m3 dot_m3(struct m3 a, struct m3 b)
 {
         return M3(
                 AB(0,0)+AB(1,3)+AB(2,6), AB(1,0)+AB(1,4)+AB(2,7), AB(0,2)+AB(1,5)+AB(2,8),
                 AB(3,0)+AB(4,3)+AB(5,6), AB(3,1)+AB(4,4)+AB(5,7), AB(3,2)+AB(4,5)+AB(5,8),
                 AB(6,0)+AB(7,3)+AB(8,6), AB(6,1)+AB(7,4)+AB(8,7), AB(6,2)+AB(7,5)+AB(8,8));
 }
-inline PURE struct m4 dot_m4(struct m4 a, struct m4 b)
+PURE struct m4 dot_m4(struct m4 a, struct m4 b)
 {
         return M4(
                 AB(0 ,0)+AB(1 ,4)+AB(2 ,8 )+AB(3 ,12), AB(0 ,1)+AB(1 ,5)+AB(2 ,9 )+AB(3 ,13),
@@ -82,7 +60,7 @@ inline PURE struct m4 dot_m4(struct m4 a, struct m4 b)
 }
 #undef AB
 #define AB(i, j) a->m[i] * b.m[j]
-inline void dot_m3_r(struct m3 *a, struct m3 b)
+void dot_m3_r(struct m3 *a, struct m3 b)
 {
         a->m[0]=AB(0,0)+AB(1,3)+AB(2,6);
         a->m[1]=AB(1,0)+AB(1,4)+AB(2,7);
@@ -94,7 +72,7 @@ inline void dot_m3_r(struct m3 *a, struct m3 b)
         a->m[7]=AB(6,1)+AB(7,4)+AB(8,7);
         a->m[8]=AB(6,2)+AB(7,5)+AB(8,8);
 }
-inline void dot_m4_r(struct m4 *a, struct m4 b)
+void dot_m4_r(struct m4 *a, struct m4 b)
 {
         a->m[0 ]=AB(0 ,0)+AB(1 ,4)+AB(2 ,8 )+AB(3 ,12);
         a->m[1 ]=AB(0 ,1)+AB(1 ,5)+AB(2 ,9 )+AB(3 ,13);
@@ -115,15 +93,106 @@ inline void dot_m4_r(struct m4 *a, struct m4 b)
 }
 #undef AB
 
-struct m3 scale_m3(struct m3 a, struct v3f v);
-struct m4 scale_m4(struct m4 a, struct v3f v);
+struct m3 scale_m3(struct m3 m, struct v3f v)
+{
+        return dot_m3(m, SCALE_MAT3(v.x, v.y, v.z));
+}
+struct m4 scale_m4(struct m4 m, struct v3f v)
+{
+        return dot_m4(m, SCALE_MAT4(v.x, v.y, v.z));
+}
 
-struct m4 translate_m4(struct m4, struct v3f v);
+struct m4 translate_m4(struct m4 m, struct v3f v)
+{
+        return dot_m4(m, TRANSLATE_MAT4(v.x, v.y, v.z));
+}
 
-struct m3 rotate_m3(struct m3, struct v3f rv);
-struct m4 rotate_m4(struct m4, struct v3f rv);
+/**
+ * calculates the rotation matrix for a rotation around V by a radians using
+ * 'Rodrigues rotation formula'
+ **/
+PURE struct m3 rotation_mat3(f32_t a, struct v3f v)
+{
+        struct m3 W,W2, W_sina;
 
-struct v2f dot_m3f2(struct m3 m, struct v2f v);
-struct v3f dot_m3f3(struct m3 m, struct v3f v);
-struct v3f dot_m4f3(struct m4 m, struct v3f v);
-struct v4f dot_m4f4(struct m4 m, struct v4f v);
+        normalizef3(&v);
+
+        W = M3(
+                0.0, -v.z,  v.y,
+                v.z,  0.0, -v.x,
+               -v.y,  v.x,  0.0);
+
+        W_sina = add_m3s(W, SINF(a));
+
+        W2 = dot_m3(W,W);
+        add_m3s_r(&W2, 2.0f*SIN2F(a/2.0f));
+        /*MR = I + W_sina + W2*/
+        return add_m3(add_m3(EYE_M3, W_sina), W2);
+}
+
+PURE struct m4 rotation_mat4(f32_t a, struct v3f v)
+{
+        struct m3 R3;
+
+        R3 = rotation_mat3(a,v);
+
+        return M4(
+                R3.m[0], R3.m[0], R3.m[0], 0.0,
+                R3.m[0], R3.m[0], R3.m[0], 0.0,
+                R3.m[0], R3.m[0], R3.m[0], 0.0,
+                0.0,     0.0,     0.0,     1.0);
+}
+
+ALWAYS_INLINE PURE struct m3 rotate_m3(struct m3 m, f32_t a, struct v3f v)
+{
+        return dot_m3(m, rotation_mat3(a, v));
+}
+struct m4 rotate_m4(struct m4 m, f32_t a, struct v3f v)
+{
+        return dot_m4(m, rotation_mat4(a, v));
+}
+
+struct v3f dot_m3f(struct m4 m, struct v3f v)
+{
+        return V3F(
+                m.m[0] * v.x + m.m[1] * v.y + m.m[2] * v.z,
+                m.m[3] * v.x + m.m[4] * v.y + m.m[5] * v.z,
+                m.m[6] * v.x + m.m[7] * v.y + m.m[8] * v.z);
+}
+struct v4f dot_m4f(struct m4 m, struct v4f v)
+{
+        return V4F(
+                v.x * m.m[0 ] + v.y * m.m[1 ] + v.z * m.m[2 ] + v.w * m.m[3 ],
+                v.x * m.m[4 ] + v.y * m.m[5 ] + v.z * m.m[6 ] + v.w * m.m[7 ],
+                v.x * m.m[8 ] + v.y * m.m[9 ] + v.z * m.m[10] + v.w * m.m[11],
+                v.x * m.m[12] + v.y * m.m[13] + v.z * m.m[14] + v.w * m.m[15]);
+}
+
+void printm3(struct m3 m)
+{
+        i32_t i, j;
+        f32_t * ptr;
+
+        ptr = m.m;
+        printf("│");
+        for (i = 0; i < 3; i++) {
+                for (j = 0; j < 3; j++)
+                        printf("%5.2f ", *(ptr++));
+                printf("│\n");
+                if(i<2) printf("│");
+        }
+}
+void printm4(struct m4 m)
+{
+        i32_t i, j;
+        f32_t * ptr;
+
+        ptr = m.m;
+        printf("│");
+        for (i = 0; i < 4; i++) {
+                for (j = 0; j < 4; j++)
+                        printf("%5.2f ", *(ptr++));
+                printf("│\n");
+                if(i<5) printf("│");
+        }
+}

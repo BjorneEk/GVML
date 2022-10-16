@@ -104,6 +104,34 @@ void str4f(char *dst, struct v4f v);
 void print2f(struct v2f v);
 void print3f(struct v3f v);
 void print4f(struct v4f v);
+
+
+/**
+ * int vector functions
+ **/
+
+struct v2i v3iv2i(struct v3i v);
+struct v2i v4iv2i(struct v4i v);
+struct v3i v2iv3i(struct v2i v);
+struct v3i v4iv3i(struct v4i v);
+struct v4i v2iv4i(struct v2i v);
+struct v4i v3iv4i(struct v3i v);
+
+i32_t dot2i(struct v2i u, struct v2i v);
+i32_t dot3i(struct v3i u, struct v3i v);
+i32_t dot4i(struct v4i u, struct v4i v);
+
+bool equals2i(struct v2i u, struct v2i v);
+bool equals3i(struct v3i u, struct v3i v);
+bool equals4i(struct v4i u, struct v4i v);
+
+void str2i(char *dst, struct v2i v);
+void str3i(char *dst, struct v3i v);
+void str4i(char *dst, struct v4i v);
+
+void print2i(struct v2i v);
+void print3i(struct v3i v);
+void print4i(struct v4i v);
 /**
  *  standard vector - vector and vector - scalar operations
  *  for each vector type

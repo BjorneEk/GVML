@@ -79,15 +79,15 @@ struct PACKED m4 { f32_t m[16]; };
 /**
  * scaling matricies
  **/
-#define SCALE_MAT3(s) M3(                                                       \
-                (s), 0.0, 0.0,                                                  \
-                0.0, (s), 0.0,                                                  \
-                0.0, 0.0, (s))
-#define SCALE_MAT4(s) M4(                                                       \
-                (s), 0.0, 0.0, 0.0,                                             \
-                0.0, (s), 0.0, 0.0,                                             \
-                0.0, 0.0, (s), 0.0,                                             \
-                0.0, 0.0, 0.0, 1.0)
+#define SCALE_MAT3(x_, y_, z_) M3(                                              \
+                (x_), 0.0, 0.0,                                                 \
+                0.0, (y_), 0.0,                                                 \
+                0.0, 0.0, (z_))
+#define SCALE_MAT4(x_, y_, z_) M4(                                              \
+                (x_), 0.0, 0.0, 0.0,                                            \
+                0.0, (y_), 0.0, 0.0,                                            \
+                0.0, 0.0, (z_), 0.0,                                            \
+                0.0, 0.0, 0.0,  1.0)
 /**
  * translation matricies
  **/
@@ -123,11 +123,26 @@ void sub_m4_r(struct m4 *a, struct m4 b);
 void mul_m4_r(struct m4 *a, struct m4 b);
 void div_m4_r(struct m4 *a, struct m4 b);
 
-struct m3 mul_m3s(struct m3 a, f32_t s);
-struct m4 mul_m4s(struct m4 a, f32_t s);
 
+struct m3 add_m3s(struct m3 a, f32_t s);
+struct m3 sub_m3s(struct m3 a, f32_t s);
+struct m3 mul_m3s(struct m3 a, f32_t s);
+struct m3 div_m3s(struct m3 a, f32_t s);
+
+struct m4 add_m4s(struct m4 a, f32_t s);
+struct m4 sub_m4s(struct m4 a, f32_t s);
+struct m4 mul_m4s(struct m4 a, f32_t s);
+struct m4 div_m4s(struct m4 a, f32_t s);
+
+void add_m3s_r(struct m3 *a, f32_t s);
+void sub_m3s_r(struct m3 *a, f32_t s);
 void mul_m3s_r(struct m3 *a, f32_t s);
+void div_m3s_r(struct m3 *a, f32_t s);
+
+void add_m4s_r(struct m4 *a, f32_t s);
+void sub_m4s_r(struct m4 *a, f32_t s);
 void mul_m4s_r(struct m4 *a, f32_t s);
+void div_m4s_r(struct m4 *a, f32_t s);
 
 struct m3 dot_m3(struct m3 a, struct m3 b);
 struct m4 dot_m4(struct m4 a, struct m4 b);
@@ -140,13 +155,13 @@ struct m4 scale_m4(struct m4 a, struct v3f v);
 
 struct m4 translate_m4(struct m4, struct v3f v);
 
-struct m3 rotate_m3(struct m3, struct v3f rv);
-struct m4 rotate_m4(struct m4, struct v3f rv);
+struct m3 rotate_m3(struct m3, f32_t a, struct v3f rv);
+struct m4 rotate_m4(struct m4, f32_t a, struct v3f rv);
 
-struct v2f dot_m3f2(struct m3 m, struct v2f v);
-struct v3f dot_m3f3(struct m3 m, struct v3f v);
-struct v3f dot_m4f3(struct m4 m, struct v3f v);
-struct v4f dot_m4f4(struct m4 m, struct v4f v);
+struct v3f dot_m3f(struct m4 m, struct v3f v);
+struct v4f dot_m4f(struct m4 m, struct v4f v);
 
+void printm3(struct m3 m);
+void printm4(struct m4 m);
 
 #endif /* _GVML_MATRIX_H_ */
